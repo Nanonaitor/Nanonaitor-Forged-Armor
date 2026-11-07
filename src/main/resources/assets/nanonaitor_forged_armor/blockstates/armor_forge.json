@@ -1,0 +1,1 @@
+{"variants":{"facing=north":{"model":"nanonaitor_forged_armor:block/armor_forge"},"facing=east":{"model":"nanonaitor_forged_armor:block/armor_forge","y":90},"facing=south":{"model":"nanonaitor_forged_armor:block/armor_forge","y":180},"facing=west":{"model":"nanonaitor_forged_armor:block/armor_forge","y":270}}}
