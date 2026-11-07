@@ -36,4 +36,4 @@ The Ender Dragon Mask has a separate configurable 5% chance to appear in End Cit
 - Magic damage uses Minecraft's magic damage type. Additional modded magic-damage systems may need dedicated compatibility.
 - Donkey Tail stack-size expansion and Camel Tail thirst integration require dedicated container/thirst-mod hooks and are retained as planned compatibility work rather than unsafe global changes.
 
-Visible 3D attachment models are planned for a later release; the installed attachment IDs already persist directly on the armor for that renderer.
+All attachments have an initial visible 3D model while equipped. Models inherit player head, torso or leg movement according to their slot and use source-mob textures and silhouettes. The installed attachment IDs persist directly on the armor, so individual models can be resized or replaced later without invalidating existing equipment.

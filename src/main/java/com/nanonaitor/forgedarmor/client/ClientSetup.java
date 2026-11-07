@@ -6,6 +6,8 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,6 +32,20 @@ public final class ClientSetup {
     }
 
     @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) { event.register(OPEN_STORAGE); }
+
+    @SubscribeEvent
+    public static void registerAttachmentLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(AttachmentModel.LAYER, AttachmentModel::createBodyLayer);
+    }
+
+    @SubscribeEvent
+    public static void addAttachmentLayer(EntityRenderersEvent.AddLayers event) {
+        for (String skin : event.getSkins()) {
+            var renderer = event.getSkin(skin);
+            if (renderer instanceof PlayerRenderer playerRenderer)
+                playerRenderer.addLayer(new ForgedArmorLayer(playerRenderer, event.getEntityModels()));
+        }
+    }
 
     private static final class InputHandler {
         private boolean jumpWasDown, forwardWasDown, backWasDown, leftWasDown, rightWasDown;

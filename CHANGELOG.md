@@ -1,3 +1,11 @@
+# 0.1.1
+
+- Added equipped 3D visuals for every armor attachment.
+- Anchored horns, masks, chest pieces, wings, tails, knee pieces and footwear to the matching animated player body part.
+- Added distinct silhouettes for horns, ears, masks, hearts, cores, shells, wings, tails, plates, spikes, feet, hooves and spider legs.
+- Reused source-mob textures so each attachment visually refers back to the creature that supplies it.
+- Kept every attachment as an independent model child for easy per-item resizing and placement adjustments.
+
 # 0.1.0
 
 - Added the green Armor Forge workstation.
