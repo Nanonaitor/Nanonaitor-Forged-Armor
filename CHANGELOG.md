@@ -1,3 +1,9 @@
+# 0.1.2
+
+- Added a dedicated Nanonaitor Forged Armor creative-mode tab.
+- Used the green Armor Forge as the tab icon.
+- Added the Armor Forge and every attachment to the tab in attachment-list order.
+
 # 0.1.1
 
 - Added equipped 3D visuals for every armor attachment.

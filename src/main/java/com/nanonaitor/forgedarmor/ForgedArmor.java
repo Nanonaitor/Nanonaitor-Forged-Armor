@@ -1,17 +1,18 @@
 package com.nanonaitor.forgedarmor;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -33,6 +34,8 @@ public final class ForgedArmor {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ID);
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, ID);
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ID);
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> LOOT_MODIFIERS =
             DeferredRegister.create(Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, ID);
 
@@ -46,6 +49,15 @@ public final class ForgedArmor {
     public static final RegistryObject<Codec<EndShipMaskLootModifier>> END_SHIP_MASK_LOOT =
             LOOT_MODIFIERS.register("end_ship_mask", () -> EndShipMaskLootModifier.CODEC);
     public static final Map<AttachmentType, RegistryObject<Item>> ATTACHMENTS = new EnumMap<>(AttachmentType.class);
+    public static final RegistryObject<CreativeModeTab> FORGED_ARMOR_TAB = CREATIVE_TABS.register("forged_armor", () ->
+            CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.nanonaitor_forged_armor"))
+                    .icon(() -> new ItemStack(ARMOR_FORGE_ITEM.get()))
+                    .displayItems((parameters, output) -> {
+                        output.accept(ARMOR_FORGE_ITEM.get());
+                        for (AttachmentType type : AttachmentType.values()) output.accept(ATTACHMENTS.get(type).get());
+                    })
+                    .build());
 
     static {
         for (AttachmentType type : AttachmentType.values()) {
@@ -58,16 +70,11 @@ public final class ForgedArmor {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         MENUS.register(modBus);
+        CREATIVE_TABS.register(modBus);
         LOOT_MODIFIERS.register(modBus);
-        modBus.addListener(this::creativeTab);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ForgedArmorConfig.SPEC);
         ForgedArmorNetwork.init();
         MinecraftForge.EVENT_BUS.register(new ForgedArmorEvents());
     }
 
-    private void creativeTab(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) event.accept(ARMOR_FORGE_ITEM.get());
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS)
-            for (RegistryObject<Item> item : ATTACHMENTS.values()) event.accept(item.get());
-    }
 }
