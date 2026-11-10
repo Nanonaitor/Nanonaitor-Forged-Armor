@@ -24,6 +24,7 @@ public enum AttachmentType {
     SHULKER_SHELL("Shulker Shell", AttachmentSlot.BACK, "minecraft:shulker"),
     WARDEN_HEART("Warden Heart", AttachmentSlot.CHEST, "minecraft:warden"),
     PHANTOM_WINGS("Phantom Wings", AttachmentSlot.BACK, "minecraft:phantom"),
+    ELYTRA("Elytra", AttachmentSlot.BACK),
     SNOW_GOLEM_ICE_CORE("Snow Golem Ice Core", AttachmentSlot.CHEST, "minecraft:snow_golem"),
     IRON_GOLEM_IRON_CORE("Iron Golem Iron Core", AttachmentSlot.CHEST, "minecraft:iron_golem"),
 
@@ -60,6 +61,7 @@ public enum AttachmentType {
     public String id() { return name().toLowerCase(); }
     public String displayName() { return displayName; }
     public AttachmentSlot slot() { return slot; }
+    public boolean hasRegisteredItem() { return this != ELYTRA; }
     public boolean dropsFrom(String entityId) { return Arrays.asList(sources).contains(entityId); }
     public static AttachmentType byId(String id) {
         for (AttachmentType type : values()) if (type.id().equals(id)) return type;

@@ -39,7 +39,7 @@ public final class ForgedArmorLayer extends RenderLayer<AbstractClientPlayer, Pl
         for (AttachmentSlot slot : AttachmentSlot.values()) {
             ItemStack armor = player.getItemBySlot(slot.armorSlot());
             AttachmentType type = AttachmentType.byId(AttachmentData.getId(armor, slot));
-            if (type != null) renderPart(type, pose, buffers, light);
+            if (type != null && type != AttachmentType.ELYTRA) renderPart(type, pose, buffers, light);
         }
     }
 

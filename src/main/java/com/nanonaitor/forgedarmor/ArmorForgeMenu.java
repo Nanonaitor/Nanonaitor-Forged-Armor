@@ -35,7 +35,7 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
             @Override public void setChanged() { super.setChanged(); updateResult(); }
         });
         addSlot(new Slot(input, 1, 80, 35) {
-            @Override public boolean mayPlace(ItemStack stack) { return stack.getItem() instanceof ArmorAttachmentItem; }
+            @Override public boolean mayPlace(ItemStack stack) { return AttachmentData.attachmentType(stack) != null; }
             @Override public void setChanged() { super.setChanged(); updateResult(); }
         });
         addSlot(new Slot(result, 0, 134, 35) {
@@ -43,10 +43,11 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
             @Override public void onTake(Player player, ItemStack stack) {
                 ItemStack armor = input.getItem(0);
                 ItemStack attachment = input.getItem(1);
-                if (attachment.getItem() instanceof ArmorAttachmentItem item) {
-                    AttachmentType previous = AttachmentType.byId(AttachmentData.getId(armor, item.type().slot()));
+                AttachmentType incoming = AttachmentData.attachmentType(attachment);
+                if (incoming != null) {
+                    AttachmentType previous = AttachmentType.byId(AttachmentData.getId(armor, incoming.slot()));
                     if (previous != null) {
-                        ItemStack returned = new ItemStack(ForgedArmor.ATTACHMENTS.get(previous).get());
+                        ItemStack returned = AttachmentData.attachmentStack(previous);
                         if (!player.getInventory().add(returned)) player.drop(returned, false);
                     }
                 }
@@ -65,11 +66,11 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
     private void updateResult() {
         ItemStack armor = input.getItem(0);
         ItemStack attachment = input.getItem(1);
-        if (armor.isEmpty() || !(attachment.getItem() instanceof ArmorAttachmentItem item)
-                || !AttachmentData.armorAccepts(armor, item.type())) {
+        AttachmentType type = AttachmentData.attachmentType(attachment);
+        if (armor.isEmpty() || type == null || !AttachmentData.armorAccepts(armor, type)) {
             result.setItem(0, ItemStack.EMPTY);
         } else {
-            result.setItem(0, AttachmentData.attach(armor, item.type()));
+            result.setItem(0, AttachmentData.attach(armor, type));
         }
         broadcastChanges();
     }
@@ -92,10 +93,10 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(original, 3, 39, true)) return ItemStack.EMPTY;
             slot.onQuickCraft(original, copy);
         } else if (index >= 3) {
-            if (Equipable.get(original) != null && Equipable.get(original).getEquipmentSlot().getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR) {
-                if (!moveItemStackTo(original, 0, 1, false)) return ItemStack.EMPTY;
-            } else if (original.getItem() instanceof ArmorAttachmentItem) {
+            if (AttachmentData.attachmentType(original) != null) {
                 if (!moveItemStackTo(original, 1, 2, false)) return ItemStack.EMPTY;
+            } else if (Equipable.get(original) != null && Equipable.get(original).getEquipmentSlot().getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR) {
+                if (!moveItemStackTo(original, 0, 1, false)) return ItemStack.EMPTY;
             } else return ItemStack.EMPTY;
         } else if (!moveItemStackTo(original, 3, 39, false)) return ItemStack.EMPTY;
         if (original.isEmpty()) slot.set(ItemStack.EMPTY); else slot.setChanged();

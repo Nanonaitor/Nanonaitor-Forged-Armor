@@ -1,10 +1,11 @@
 plugins {
     id 'java'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 group = 'com.nanonaitor.forgedarmor'
-version = '0.1.2'
+version = '0.1.3'
 base.archivesName = 'nanonaitor-forged-armor-1.20.1'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -21,11 +22,20 @@ minecraft {
     }
 }
 
-dependencies { minecraft 'net.minecraftforge:forge:1.20.1-47.4.18' }
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.20.1-47.4.18'
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+mixin {
+    add sourceSets.main, 'nanonaitor_forged_armor.refmap.json'
+    config 'nanonaitor_forged_armor.mixins.json'
+}
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 processResources {
     inputs.property 'version', project.version
     filesMatching('META-INF/mods.toml') { expand version: project.version }
 }
+jar { manifest { attributes 'MixinConfigs': 'nanonaitor_forged_armor.mixins.json' } }
 jar.finalizedBy('reobfJar')

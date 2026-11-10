@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.nanonaitor.forgedarmor.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "nanonaitor_forged_armor.refmap.json",
+  "mixins": [
+    "LivingEntityElytraMixin",
+    "PlayerElytraMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

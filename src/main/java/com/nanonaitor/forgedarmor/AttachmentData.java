@@ -5,6 +5,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Equipable;
+import net.minecraft.world.item.Items;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -37,6 +38,22 @@ public final class AttachmentData {
         result.setCount(1);
         result.getOrCreateTagElement(ROOT).putString(type.slot().key(), type.id());
         return result;
+    }
+
+    public static AttachmentType attachmentType(ItemStack stack) {
+        if (stack.is(Items.ELYTRA)) return AttachmentType.ELYTRA;
+        return stack.getItem() instanceof ArmorAttachmentItem item ? item.type() : null;
+    }
+
+    public static ItemStack attachmentStack(AttachmentType type) {
+        if (type == AttachmentType.ELYTRA) return new ItemStack(Items.ELYTRA);
+        return new ItemStack(ForgedArmor.ATTACHMENTS.get(type).get());
+    }
+
+    /** Matches vanilla Elytra behavior: flight stops before the equipped item breaks. */
+    public static boolean canFlyWith(ItemStack chest) {
+        return has(chest, AttachmentType.ELYTRA) && chest.isDamageableItem()
+                && chest.getDamageValue() < chest.getMaxDamage() - 1;
     }
 
     public static Set<AttachmentType> equipped(net.minecraft.world.entity.LivingEntity entity) {

@@ -1,3 +1,12 @@
+# 0.1.3
+
+- Added the vanilla Elytra as a chestplate Back-slot attachment.
+- Added normal Elytra takeoff, flight physics, sounds and flight animation while keeping the chestplate equipped.
+- Rendered Minecraft's animated Elytra wings as part of the forged chestplate.
+- Redirected Elytra flight wear to the chestplate at the vanilla rate of one durability per second.
+- Made flight durability respect Unbreaking and stop at one remaining durability instead of breaking the chestplate.
+- Added replacement support that returns an Elytra when another Back attachment replaces it.
+
 # 0.1.2
 
 - Added a dedicated Nanonaitor Forged Armor creative-mode tab.

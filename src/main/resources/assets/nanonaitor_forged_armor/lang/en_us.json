@@ -63,6 +63,7 @@
   "attachment.nanonaitor_forged_armor.shulker_shell.description": "Provides access to Ender Chest storage.",
   "attachment.nanonaitor_forged_armor.warden_heart.description": "Distracts and marks one enemy every 30 seconds.",
   "attachment.nanonaitor_forged_armor.phantom_wings.description": "Allows controlled gliding while falling.",
+  "attachment.nanonaitor_forged_armor.elytra.description": "Provides vanilla Elytra flight using chestplate durability.",
   "attachment.nanonaitor_forged_armor.snow_golem_ice_core.description": "Prevents Hyperthermia when supported.",
   "attachment.nanonaitor_forged_armor.iron_golem_iron_core.description": "Prevents Hypothermia when supported.",
   "attachment.nanonaitor_forged_armor.bee_stinger.description": "Poisons attackers with Poison II.",

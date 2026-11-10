@@ -42,8 +42,10 @@ public final class ClientSetup {
     public static void addAttachmentLayer(EntityRenderersEvent.AddLayers event) {
         for (String skin : event.getSkins()) {
             var renderer = event.getSkin(skin);
-            if (renderer instanceof PlayerRenderer playerRenderer)
+            if (renderer instanceof PlayerRenderer playerRenderer) {
                 playerRenderer.addLayer(new ForgedArmorLayer(playerRenderer, event.getEntityModels()));
+                playerRenderer.addLayer(new ForgedElytraLayer(playerRenderer, event.getEntityModels()));
+            }
         }
     }
 

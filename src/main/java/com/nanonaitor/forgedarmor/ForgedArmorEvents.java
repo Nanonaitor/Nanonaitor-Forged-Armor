@@ -21,6 +21,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.tags.BlockTags;
@@ -261,6 +262,13 @@ public final class ForgedArmorEvents {
     @SubscribeEvent
     public void tooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
+        if (stack.is(Items.ELYTRA)) {
+            event.getToolTip().add(net.minecraft.network.chat.Component.literal("Armor Forge attachment: Back")
+                    .withStyle(net.minecraft.ChatFormatting.GREEN));
+            event.getToolTip().add(net.minecraft.network.chat.Component.translatable(
+                    "attachment.nanonaitor_forged_armor.elytra.description")
+                    .withStyle(net.minecraft.ChatFormatting.GRAY));
+        }
         Equipable equipable = Equipable.get(stack);
         if (equipable == null || equipable.getEquipmentSlot().getType() != EquipmentSlot.Type.ARMOR) return;
         for (AttachmentSlot slot : AttachmentSlot.values()) {

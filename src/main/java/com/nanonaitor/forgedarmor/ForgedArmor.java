@@ -55,12 +55,13 @@ public final class ForgedArmor {
                     .icon(() -> new ItemStack(ARMOR_FORGE_ITEM.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(ARMOR_FORGE_ITEM.get());
-                        for (AttachmentType type : AttachmentType.values()) output.accept(ATTACHMENTS.get(type).get());
+                        for (AttachmentType type : AttachmentType.values()) output.accept(AttachmentData.attachmentStack(type));
                     })
                     .build());
 
     static {
         for (AttachmentType type : AttachmentType.values()) {
+            if (!type.hasRegisteredItem()) continue;
             ATTACHMENTS.put(type, ITEMS.register(type.id(), () -> new ArmorAttachmentItem(type, new Item.Properties())));
         }
     }
