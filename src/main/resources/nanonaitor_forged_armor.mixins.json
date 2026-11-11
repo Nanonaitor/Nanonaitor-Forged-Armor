@@ -6,6 +6,7 @@
   "refmap": "nanonaitor_forged_armor.refmap.json",
   "mixins": [
     "LivingEntityElytraMixin",
+    "LivingEntityFluidMixin",
     "PlayerElytraMixin"
   ],
   "injectors": {

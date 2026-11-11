@@ -100,7 +100,6 @@ public final class ForgedArmorLayer extends RenderLayer<AbstractClientPlayer, Pl
         put(m, "bee/bee.png", AttachmentType.BEE_STINGER);
         put(m, "guardian.png", AttachmentType.GUARDIAN_SPIKES);
         put(m, "parrot/parrot_blue.png", AttachmentType.PARROT_TAIL);
-        put(m, "horse/donkey.png", AttachmentType.DONKEY_TAIL);
         put(m, "camel/camel.png", AttachmentType.CAMEL_TAIL);
         put(m, "silverfish.png", AttachmentType.SILVERFISH_CARAPACE);
         put(m, "guardian_elder.png", AttachmentType.ELDER_GUARDIAN_SPIKES);

@@ -65,8 +65,9 @@ public final class ForgedArmorEvents {
         ResourceLocation entityKey = BuiltInRegistries.ENTITY_TYPE.getKey(event.getEntity().getType());
         String entityId = entityKey.toString();
         for (AttachmentType type : AttachmentType.values()) {
-            if (!type.dropsFrom(entityId) || event.getEntity().getRandom().nextDouble() >= Math.min(1.0, chance)) continue;
-            ItemStack drop = new ItemStack(ForgedArmor.ATTACHMENTS.get(type).get());
+            if (!type.enabled() || !type.dropsFrom(entityId)
+                    || event.getEntity().getRandom().nextDouble() >= Math.min(1.0, chance)) continue;
+            ItemStack drop = AttachmentData.attachmentStack(type);
             event.getDrops().add(new ItemEntity(event.getEntity().level(), event.getEntity().getX(),
                     event.getEntity().getY(), event.getEntity().getZ(), drop));
         }
@@ -87,6 +88,11 @@ public final class ForgedArmorEvents {
                 event.setAmount(event.getAmount() * (1.0F + ForgedArmorConfig.RANGED_BONUS.get().floatValue()));
             if (event.getSource().is(DamageTypes.MAGIC) && attackerAttachments.contains(AttachmentType.GOAT_HORN))
                 event.setAmount(event.getAmount() * (1.0F + ForgedArmorConfig.MAGIC_BONUS.get().floatValue()));
+            if (!projectile && attackerAttachments.contains(AttachmentType.HOGLIN_HOOVES)) {
+                double dx = attacker.getX() - victim.getX();
+                double dz = attacker.getZ() - victim.getZ();
+                victim.knockback(ForgedArmorConfig.KNOCKBACK_DEALT.get(), dx, dz);
+            }
         }
 
         if (event.getSource().is(DamageTypeTags.IS_PROJECTILE) && victimAttachments.contains(AttachmentType.SHULKER_PLATES))
@@ -104,11 +110,6 @@ public final class ForgedArmorEvents {
                 attacker.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 1));
             if (victimAttachments.contains(AttachmentType.GUARDIAN_SPIKES))
                 attacker.hurt(victim.damageSources().thorns(victim), 2.0F);
-            if (victimAttachments.contains(AttachmentType.HOGLIN_HOOVES)) {
-                double dx = attacker.getX() - victim.getX();
-                double dz = attacker.getZ() - victim.getZ();
-                attacker.knockback(ForgedArmorConfig.KNOCKBACK_DEALT.get(), -dx, -dz);
-            }
         }
     }
 
@@ -170,7 +171,8 @@ public final class ForgedArmorEvents {
             if (attachments.contains(AttachmentType.WARDEN_EARS)) {
                 int range = ForgedArmorConfig.WARDEN_EARS_RANGE.get();
                 for (LivingEntity nearby : player.level().getEntitiesOfClass(LivingEntity.class,
-                        player.getBoundingBox().inflate(range), e -> e != player))
+                        player.getBoundingBox().inflate(range), e -> e instanceof Enemy
+                                || (e instanceof Mob mob && mob.getTarget() == player)))
                     nearby.addEffect(new MobEffectInstance(MobEffects.GLOWING, 40, 0, true, false));
             }
             removeTemperatureEffect(player, attachments);
@@ -183,10 +185,9 @@ public final class ForgedArmorEvents {
         }
 
         if (player.onGround()) player.getPersistentData().putBoolean("ForgedArmorAirJumpUsed", false);
-        if (attachments.contains(AttachmentType.STRIDER_FEET) && player.isInLava()) {
+        if (attachments.contains(AttachmentType.STRIDER_FEET)) {
             player.clearFire();
-            if (player.getDeltaMovement().y < 0.08) player.setDeltaMovement(player.getDeltaMovement().x, 0.08, player.getDeltaMovement().z);
-            player.fallDistance = 0;
+            if (player.isInLava()) player.fallDistance = 0;
         }
         if (attachments.contains(AttachmentType.SPIDER_LEGS) && player.horizontalCollision)
             player.setDeltaMovement(player.getDeltaMovement().x, 0.20, player.getDeltaMovement().z);
@@ -262,11 +263,13 @@ public final class ForgedArmorEvents {
     @SubscribeEvent
     public void tooltip(ItemTooltipEvent event) {
         ItemStack stack = event.getItemStack();
-        if (stack.is(Items.ELYTRA)) {
-            event.getToolTip().add(net.minecraft.network.chat.Component.literal("Armor Forge attachment: Back")
+        AttachmentType attachmentItem = AttachmentData.attachmentType(stack);
+        if (attachmentItem != null && attachmentItem.vanillaItem() != null) {
+            event.getToolTip().add(net.minecraft.network.chat.Component.literal(
+                            "Armor Forge attachment: " + attachmentItem.slot().displayName().getString())
                     .withStyle(net.minecraft.ChatFormatting.GREEN));
             event.getToolTip().add(net.minecraft.network.chat.Component.translatable(
-                    "attachment.nanonaitor_forged_armor.elytra.description")
+                    "attachment.nanonaitor_forged_armor." + attachmentItem.id() + ".description")
                     .withStyle(net.minecraft.ChatFormatting.GRAY));
         }
         Equipable equipable = Equipable.get(stack);

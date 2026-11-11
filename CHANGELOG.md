@@ -1,3 +1,13 @@
+# 0.1.4
+
+- Removed Donkey Tail and cleanly ignored its old missing item mapping.
+- Disabled Camel Tail pending Tough As Nails thirst and temperature compatibility.
+- Replaced duplicate attachments with their proper vanilla Goat Horn, mob head, Turtle Shell, Shulker Shell, Rabbit's Foot, Slimeball and Elytra items.
+- Added automatic remapping from the removed duplicate item IDs to their vanilla equivalents for existing worlds.
+- Corrected Hoglin Hooves so melee attacks made by the wearer knock the target away.
+- Corrected Strider Feet so players can stand and walk directly on lava using Minecraft's fluid-standing behavior.
+- Restricted Warden Ears highlighting to hostile mobs and mobs actively targeting the wearer.
+
 # 0.1.3
 
 - Added the vanilla Elytra as a chestplate Back-slot attachment.

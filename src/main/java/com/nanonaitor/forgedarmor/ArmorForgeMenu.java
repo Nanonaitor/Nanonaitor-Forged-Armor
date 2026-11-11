@@ -35,7 +35,10 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
             @Override public void setChanged() { super.setChanged(); updateResult(); }
         });
         addSlot(new Slot(input, 1, 80, 35) {
-            @Override public boolean mayPlace(ItemStack stack) { return AttachmentData.attachmentType(stack) != null; }
+            @Override public boolean mayPlace(ItemStack stack) {
+                AttachmentType type = AttachmentData.attachmentType(stack);
+                return type != null && type.enabled();
+            }
             @Override public void setChanged() { super.setChanged(); updateResult(); }
         });
         addSlot(new Slot(result, 0, 134, 35) {
@@ -67,7 +70,7 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
         ItemStack armor = input.getItem(0);
         ItemStack attachment = input.getItem(1);
         AttachmentType type = AttachmentData.attachmentType(attachment);
-        if (armor.isEmpty() || type == null || !AttachmentData.armorAccepts(armor, type)) {
+        if (armor.isEmpty() || type == null || !type.enabled() || !AttachmentData.armorAccepts(armor, type)) {
             result.setItem(0, ItemStack.EMPTY);
         } else {
             result.setItem(0, AttachmentData.attach(armor, type));

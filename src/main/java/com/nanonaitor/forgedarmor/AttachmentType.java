@@ -6,13 +6,13 @@ public enum AttachmentType {
     RAVAGER_HORN("Ravager Horn", AttachmentSlot.HORNS, "minecraft:ravager"),
     GOAT_HORN("Goat Horn", AttachmentSlot.HORNS, "minecraft:goat"),
     PILLAGER_NOSE("Pillager Nose", AttachmentSlot.FACE, "minecraft:pillager"),
-    ZOMBIE_MASK("Zombie Mask", AttachmentSlot.FACE, "minecraft:zombie", "minecraft:husk", "minecraft:drowned"),
-    SKELETON_MASK("Skeleton Mask", AttachmentSlot.FACE, "minecraft:skeleton", "minecraft:stray"),
-    CREEPER_MASK("Creeper Mask", AttachmentSlot.FACE, "minecraft:creeper"),
+    ZOMBIE_MASK("Zombie Head", AttachmentSlot.FACE, "minecraft:zombie", "minecraft:husk", "minecraft:drowned"),
+    SKELETON_MASK("Skeleton Skull", AttachmentSlot.FACE, "minecraft:skeleton", "minecraft:stray"),
+    CREEPER_MASK("Creeper Head", AttachmentSlot.FACE, "minecraft:creeper"),
     SPIDER_MASK("Spider Mask", AttachmentSlot.FACE, "minecraft:spider", "minecraft:cave_spider"),
     HOGLIN_HORN("Hoglin Horn", AttachmentSlot.HORNS, "minecraft:hoglin"),
     BUNNY_EARS("Bunny Ears", AttachmentSlot.HORNS, "minecraft:rabbit"),
-    ENDER_DRAGON_MASK("Ender Dragon Mask", AttachmentSlot.FACE),
+    ENDER_DRAGON_MASK("Dragon Head", AttachmentSlot.FACE),
     WARDEN_EARS("Warden Ears", AttachmentSlot.HORNS, "minecraft:warden"),
 
     WITCH_HEART("Witch Heart", AttachmentSlot.CHEST, "minecraft:witch"),
@@ -31,7 +31,7 @@ public enum AttachmentType {
     BEE_STINGER("Bee Stinger", AttachmentSlot.TAIL, "minecraft:bee"),
     GUARDIAN_SPIKES("Guardian Spikes", AttachmentSlot.KNEES, "minecraft:guardian"),
     PARROT_TAIL("Parrot Tail", AttachmentSlot.TAIL, "minecraft:parrot"),
-    DONKEY_TAIL("Donkey Tail", AttachmentSlot.TAIL, "minecraft:donkey"),
+    // TODO: Re-enable Camel Tail after Tough As Nails thirst/temperature compatibility is implemented.
     CAMEL_TAIL("Camel Tail", AttachmentSlot.TAIL, "minecraft:camel"),
     SHULKER_PLATES("Shulker Plates", AttachmentSlot.KNEES, "minecraft:shulker"),
     RAVAGER_HIDE("Ravager Hide", AttachmentSlot.KNEES, "minecraft:ravager"),
@@ -61,7 +61,23 @@ public enum AttachmentType {
     public String id() { return name().toLowerCase(); }
     public String displayName() { return displayName; }
     public AttachmentSlot slot() { return slot; }
-    public boolean hasRegisteredItem() { return this != ELYTRA; }
+    public boolean enabled() { return this != CAMEL_TAIL; }
+    public net.minecraft.world.item.Item vanillaItem() {
+        return switch (this) {
+            case GOAT_HORN -> net.minecraft.world.item.Items.GOAT_HORN;
+            case ZOMBIE_MASK -> net.minecraft.world.item.Items.ZOMBIE_HEAD;
+            case SKELETON_MASK -> net.minecraft.world.item.Items.SKELETON_SKULL;
+            case CREEPER_MASK -> net.minecraft.world.item.Items.CREEPER_HEAD;
+            case ENDER_DRAGON_MASK -> net.minecraft.world.item.Items.DRAGON_HEAD;
+            case TURTLE_SHELL -> net.minecraft.world.item.Items.TURTLE_HELMET;
+            case SHULKER_SHELL -> net.minecraft.world.item.Items.SHULKER_SHELL;
+            case ELYTRA -> net.minecraft.world.item.Items.ELYTRA;
+            case RABBIT_FEET -> net.minecraft.world.item.Items.RABBIT_FOOT;
+            case SLIME -> net.minecraft.world.item.Items.SLIME_BALL;
+            default -> null;
+        };
+    }
+    public boolean hasRegisteredItem() { return vanillaItem() == null; }
     public boolean dropsFrom(String entityId) { return Arrays.asList(sources).contains(entityId); }
     public static AttachmentType byId(String id) {
         for (AttachmentType type : values()) if (type.id().equals(id)) return type;

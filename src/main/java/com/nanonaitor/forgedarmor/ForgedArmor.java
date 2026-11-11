@@ -21,6 +21,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.MissingMappingsEvent;
 import com.mojang.serialization.Codec;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.registries.ForgeRegistries.Keys;
@@ -55,7 +56,8 @@ public final class ForgedArmor {
                     .icon(() -> new ItemStack(ARMOR_FORGE_ITEM.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(ARMOR_FORGE_ITEM.get());
-                        for (AttachmentType type : AttachmentType.values()) output.accept(AttachmentData.attachmentStack(type));
+                        for (AttachmentType type : AttachmentType.values())
+                            if (type.enabled()) output.accept(AttachmentData.attachmentStack(type));
                     })
                     .build());
 
@@ -76,6 +78,18 @@ public final class ForgedArmor {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ForgedArmorConfig.SPEC);
         ForgedArmorNetwork.init();
         MinecraftForge.EVENT_BUS.register(new ForgedArmorEvents());
+        MinecraftForge.EVENT_BUS.addListener(this::missingMappings);
+    }
+
+    private void missingMappings(MissingMappingsEvent event) {
+        for (var mapping : event.getMappings(ForgeRegistries.Keys.ITEMS, ID)) {
+            if (mapping.getKey().getPath().equals("donkey_tail")) {
+                mapping.ignore();
+                continue;
+            }
+            AttachmentType type = AttachmentType.byId(mapping.getKey().getPath());
+            if (type != null && type.vanillaItem() != null) mapping.remap(type.vanillaItem());
+        }
     }
 
 }

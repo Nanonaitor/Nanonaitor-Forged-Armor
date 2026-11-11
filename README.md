@@ -21,7 +21,11 @@ same rate as a normal Elytra, respects Unbreaking and stops at one durability re
 
 Every eligible mob attachment uses a configurable 5% base drop chance. Looting adds 4% per level and the Luck status effect adds 4% per level by default. All three values and mob drops as a whole are configurable in `nanonaitor_forged_armor-common.toml`.
 
-The Ender Dragon Mask has a separate configurable 5% chance to appear in End City treasure chests.
+An attachable vanilla Dragon Head has a separate configurable 5% chance to appear in End City treasure chests.
+
+When Minecraft already provides the appropriate object, the Armor Forge uses that vanilla item instead of registering
+a duplicate. This includes Goat Horns, Zombie Heads, Skeleton Skulls, Creeper Heads, Dragon Heads, Turtle Shells,
+Shulker Shells, Rabbit's Feet, Slimeballs and Elytras.
 
 ## Controls
 
@@ -39,6 +43,7 @@ The Ender Dragon Mask has a separate configurable 5% chance to appear in End Cit
 - Creaking Heart and Breeze Wind drops activate when a compatible mod registers `minecraft:creaking`, `palebloom:creaking`, or `minecraft:breeze` on 1.20.1.
 - Snow Golem Ice Core and Iron Golem Iron Core remove effects whose registry paths contain `hyperthermia` and `hypothermia` respectively.
 - Magic damage uses Minecraft's magic damage type. Additional modded magic-damage systems may need dedicated compatibility.
-- Donkey Tail stack-size expansion and Camel Tail thirst integration require dedicated container/thirst-mod hooks and are retained as planned compatibility work rather than unsafe global changes.
+- Donkey Tail has been removed.
+- Camel Tail is disabled pending dedicated Tough As Nails thirst and temperature compatibility.
 
 All attachments have an initial visible 3D model while equipped. Models inherit player head, torso or leg movement according to their slot and use source-mob textures and silhouettes. The installed attachment IDs persist directly on the armor, so individual models can be resized or replaced later without invalidating existing equipment.

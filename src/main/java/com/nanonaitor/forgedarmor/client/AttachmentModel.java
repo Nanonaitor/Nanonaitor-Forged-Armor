@@ -67,7 +67,6 @@ public final class AttachmentModel {
         stinger(root);
         kneeSpikes(root, AttachmentType.GUARDIAN_SPIKES, 1.8F);
         featherTail(root);
-        tail(root, AttachmentType.DONKEY_TAIL, 1.5F, 7.0F);
         tail(root, AttachmentType.CAMEL_TAIL, 1.8F, 6.0F);
         kneePlate(root, AttachmentType.SHULKER_PLATES, 4.4F, 2.2F);
         kneePlate(root, AttachmentType.RAVAGER_HIDE, 4.8F, 2.5F);

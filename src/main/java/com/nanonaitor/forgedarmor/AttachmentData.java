@@ -5,7 +5,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Equipable;
-import net.minecraft.world.item.Items;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -41,12 +40,14 @@ public final class AttachmentData {
     }
 
     public static AttachmentType attachmentType(ItemStack stack) {
-        if (stack.is(Items.ELYTRA)) return AttachmentType.ELYTRA;
-        return stack.getItem() instanceof ArmorAttachmentItem item ? item.type() : null;
+        if (stack.getItem() instanceof ArmorAttachmentItem item) return item.type();
+        for (AttachmentType type : AttachmentType.values())
+            if (type.vanillaItem() != null && stack.is(type.vanillaItem())) return type;
+        return null;
     }
 
     public static ItemStack attachmentStack(AttachmentType type) {
-        if (type == AttachmentType.ELYTRA) return new ItemStack(Items.ELYTRA);
+        if (type.vanillaItem() != null) return new ItemStack(type.vanillaItem());
         return new ItemStack(ForgedArmor.ATTACHMENTS.get(type).get());
     }
 

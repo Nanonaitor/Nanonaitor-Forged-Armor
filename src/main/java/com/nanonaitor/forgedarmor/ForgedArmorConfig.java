@@ -27,8 +27,8 @@ public final class ForgedArmorConfig {
         BASE_DROP_CHANCE = b.comment("Base chance for each eligible attachment to drop.").defineInRange("baseDropChance", 0.05, 0.0, 1.0);
         LOOTING_BONUS_PER_LEVEL = b.comment("Extra drop chance per Looting level.").defineInRange("lootingBonusPerLevel", 0.04, 0.0, 1.0);
         LUCK_BONUS_PER_LEVEL = b.comment("Extra drop chance per level of the Luck status effect.").defineInRange("luckBonusPerLevel", 0.04, 0.0, 1.0);
-        ENABLE_END_SHIP_MASK = b.comment("Allow Ender Dragon Masks in End City treasure chests.").define("enableEndShipMask", true);
-        END_SHIP_MASK_CHANCE = b.comment("Chance per End City treasure chest to add an Ender Dragon Mask.").defineInRange("endShipMaskChance", 0.05, 0.0, 1.0);
+        ENABLE_END_SHIP_MASK = b.comment("Allow Dragon Heads in End City treasure chests as Face attachments.").define("enableEndShipMask", true);
+        END_SHIP_MASK_CHANCE = b.comment("Chance per End City treasure chest to add an attachable Dragon Head.").defineInRange("endShipMaskChance", 0.05, 0.0, 1.0);
         b.pop();
 
         b.push("abilities");

@@ -22,7 +22,7 @@ public final class EndShipMaskLootModifier extends LootModifier {
         if (ForgedArmorConfig.ENABLE_END_SHIP_MASK.get()
                 && END_CITY.equals(context.getQueriedLootTableId())
                 && context.getRandom().nextDouble() < ForgedArmorConfig.END_SHIP_MASK_CHANCE.get())
-            loot.add(new ItemStack(ForgedArmor.ATTACHMENTS.get(AttachmentType.ENDER_DRAGON_MASK).get()));
+            loot.add(AttachmentData.attachmentStack(AttachmentType.ENDER_DRAGON_MASK));
         return loot;
     }
 
