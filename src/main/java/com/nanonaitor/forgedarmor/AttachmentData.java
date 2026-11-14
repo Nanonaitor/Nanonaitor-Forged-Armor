@@ -29,13 +29,32 @@ public final class AttachmentData {
 
     public static String getId(ItemStack armor, AttachmentSlot slot) {
         CompoundTag tag = armor.getTag();
-        return tag == null || !tag.contains(ROOT) ? "" : tag.getCompound(ROOT).getString(slot.key());
+        if (tag == null || !tag.contains(ROOT)) return "";
+        CompoundTag attachments = tag.getCompound(ROOT);
+        String id = attachments.getString(slot.key());
+
+        // Turtle Shell used the Chest attachment slot before 0.1.9. Treat an old
+        // entry as Back when that slot is free, and hide it from Chest so old
+        // chestplates keep their shell without occupying both attachment types.
+        String legacyChest = attachments.getString(AttachmentSlot.CHEST.key());
+        if (slot == AttachmentSlot.BACK && id.isEmpty()
+                && AttachmentType.TURTLE_SHELL.id().equals(legacyChest))
+            return AttachmentType.TURTLE_SHELL.id();
+        if (slot == AttachmentSlot.CHEST && AttachmentType.TURTLE_SHELL.id().equals(id))
+            return "";
+        return id;
     }
 
     public static ItemStack attach(ItemStack armor, AttachmentType type) {
         ItemStack result = armor.copy();
         result.setCount(1);
-        result.getOrCreateTagElement(ROOT).putString(type.slot().key(), type.id());
+        CompoundTag attachments = result.getOrCreateTagElement(ROOT);
+        if (AttachmentType.TURTLE_SHELL.id().equals(attachments.getString(AttachmentSlot.CHEST.key()))) {
+            if (attachments.getString(AttachmentSlot.BACK.key()).isEmpty())
+                attachments.putString(AttachmentSlot.BACK.key(), AttachmentType.TURTLE_SHELL.id());
+            attachments.remove(AttachmentSlot.CHEST.key());
+        }
+        attachments.putString(type.slot().key(), type.id());
         return result;
     }
 

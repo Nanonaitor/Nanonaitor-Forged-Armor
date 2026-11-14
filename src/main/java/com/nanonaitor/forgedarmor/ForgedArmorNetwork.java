@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
@@ -44,6 +45,7 @@ public final class ForgedArmorNetwork {
                         player.getPersistentData().putBoolean("ForgedArmorAirJumpUsed", true);
                         player.hasImpulse = true;
                         player.hurtMarked = true;
+                        player.connection.send(new ClientboundSetEntityMotionPacket(player));
                     }
                 }
                 case DASH_FORWARD, DASH_BACK, DASH_LEFT, DASH_RIGHT -> {

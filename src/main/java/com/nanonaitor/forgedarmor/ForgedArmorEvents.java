@@ -265,9 +265,6 @@ public final class ForgedArmorEvents {
         ItemStack stack = event.getItemStack();
         AttachmentType attachmentItem = AttachmentData.attachmentType(stack);
         if (attachmentItem != null && attachmentItem.vanillaItem() != null) {
-            event.getToolTip().add(net.minecraft.network.chat.Component.literal(
-                            "Armor Forge attachment: " + attachmentItem.slot().displayName().getString())
-                    .withStyle(net.minecraft.ChatFormatting.GREEN));
             event.getToolTip().add(net.minecraft.network.chat.Component.translatable(
                     "attachment.nanonaitor_forged_armor." + attachmentItem.id() + ".description")
                     .withStyle(net.minecraft.ChatFormatting.GRAY));

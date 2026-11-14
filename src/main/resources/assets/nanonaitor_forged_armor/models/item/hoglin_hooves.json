@@ -1,1 +1,1 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"nanonaitor_forged_armor:item/hoglin_hooves"}}
+{"parent":"minecraft:item/generated","textures":{"layer0":"nanonaitor_forged_armor:item/hoglin_hooves"},"display":{"gui":{"rotation":[0,0,0],"translation":[0,0,0],"scale":[0.78,0.78,0.78]}}}

@@ -38,14 +38,17 @@ IDs, so models can be reshaped freely.
 | Ravager Horn | Head | Ravager horns |
 | Goat Horn | Head | Goat horns |
 | Pillager Nose | Head | Illager nose |
-| Zombie Head | Head | Zombie head skull (with hat layer), sized over the helmet |
+| Zombie Head | Head | Zombie head skull (with hat layer), sized to the player head |
 | Skeleton Skull | Head | Skeleton skull |
 | Creeper Head | Head | Creeper head |
 | Spider Mask | Head | Spider head with glowing eye layer |
 | Hoglin Horn | Head | Hoglin tusks, at the chin |
 | Bunny Ears | Head | Rabbit ears |
-| Dragon Head | Head | Dragon head skull and jaw, at vanilla worn size |
+| Dragon Head | Head | Dragon head skull and jaw |
 | Warden Ears | Head | Warden tendrils |
+
+Zombie, Skeleton, Creeper, Spider and Dragon heads replace the wearer's head: the player's head, hat layer and
+helmet are hidden while one is attached (`MobHeadVisibility` and `HumanoidArmorLayerMixin`).
 
 ## Chestplate
 

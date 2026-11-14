@@ -9,6 +9,9 @@
     "LivingEntityFluidMixin",
     "PlayerElytraMixin"
   ],
+  "client": [
+    "client.HumanoidArmorLayerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

@@ -170,11 +170,11 @@ def build_rigs():
         if hat:
             boxes.append(Box(32, 0, -4, -8, -4, 8, 8, 8, grow=0.25))
         R.append(Rig(name, "head", f"minecraft:entity/{tex}", size, both(Part("head", boxes)),
-                     src=(0, -4, 0), dst=(0, -4.2, 0), scale=1.3))
+                     src=(0, -4, 0), dst=(0, -4.1, 0), scale=1.1))
 
     R.append(Rig("spider_mask", "head", "minecraft:entity/spider/spider", (64, 32), both(
         Part("head", [Box(32, 4, -4, -4, -8, 8, 8, 8)]),
-    ), src=(0, 0, -4), dst=(0, -4.2, 0), scale=1.3, glow="minecraft:entity/spider_eyes"))
+    ), src=(0, 0, -4), dst=(0, -4.1, 0), scale=1.1, glow="minecraft:entity/spider_eyes"))
 
     R.append(Rig("hoglin_horn", "head", "minecraft:entity/hoglin/hoglin", (128, 64), both(
         Part("right_horn", [Box(10, 13, -1, -11, -1, 2, 11, 2)], (-7, 2, -12)),
@@ -195,7 +195,7 @@ def build_rigs():
             Box(0, 0, 3, -12, -4, 2, 4, 6),
             Box(112, 0, 3, -3, -22, 2, 2, 4),
         ], children=[Part("jaw", [Box(176, 65, -6, 0, -16, 12, 4, 16)], (0, 4, -8))]),
-    ), src=(0, 0, -2), dst=(0, -5.6, 0.6), scale=0.89))
+    ), src=(0, 0, -2), dst=(0, -5.7, 0.4), scale=0.75))
 
     R.append(Rig("warden_ears", "head", "minecraft:entity/warden/warden", (128, 128), both(
         Part("right_tendril", [Box(52, 32, -16, -13, 0, 16, 16, 0)], (-8, -12, 0)),
@@ -279,9 +279,9 @@ def build_rigs():
     }, src=(0, 0, 0), dst=(0, 9.5, 0), scale=0.45))
 
     R.append(Rig("strider_feet", "legs", "minecraft:entity/strider/strider", (64, 128), {
-        "right": [Part("foot", [Box(0, 42, -2, 0, -2, 4, 6, 4), Box(0, 32, -2, 6, -2, 4, 0, 4)])],
-        "left": [Part("foot", [Box(0, 65, -2, 0, -2, 4, 6, 4), Box(0, 55, -2, 6, -2, 4, 0, 4)])],
-    }, src=(0, 6, 0), dst=(0, 13.1, 0), scale=(1.6, 0.9, 1.6)))
+        "right": [Part("foot", [Box(0, 42, -2, 0, -2, 4, 6, 4), Box(0, 32, -2, 6.1, -2, 4, 0, 4)])],
+        "left": [Part("foot", [Box(0, 65, -2, 0, -2, 4, 6, 4), Box(0, 55, -2, 6.1, -2, 4, 0, 4)])],
+    }, src=(0, 6, 0), dst=(0, 14.1, 0), scale=(1.6, 0.9, 1.6)))
 
     R.append(Rig("rabbit_feet", "legs", "minecraft:entity/rabbit/brown", (64, 32), {
         "right": [Part("foot", [Box(8, 24, -1, 5.5, -3.7, 2, 1, 7)])],
@@ -306,17 +306,17 @@ def build_rigs():
                   Part("thigh", [Box(0, 25, -1.5, 0, -2, 3, 3, 4)], (0, -3, 2.6))],
         "left": [Part("foot", [Box(2, 32, -4, 0.01, -4, 8, 0, 8)]),
                  Part("thigh", [Box(14, 25, -1.5, 0, -2, 3, 3, 4)], (0, -3, 2.6))],
-    }, src=(0, 0, 0), dst=(0, 13.0, -1.6), scale=1.55))
+    }, src=(0, 0, 0), dst=(0, 13.0, -2.8), scale=1.55))
 
     R.append(Rig("piglin_hooves", "legs", "minecraft:entity/piglin/piglin", (64, 64), {
-        "right": [Part("hoof", [Box(0, 25, -2, 0, -2, 4, 3, 4), Box(0, 16, -2, 3, -2, 4, 0, 4)])],
-        "left": [Part("hoof", [Box(16, 57, -2, 0, -2, 4, 3, 4), Box(16, 48, -2, 3, -2, 4, 0, 4)])],
-    }, src=(0, 3, 0), dst=(0, 13.1, 0), scale=(1.6, 1.25, 1.6)))
+        "right": [Part("hoof", [Box(0, 25, -2, 0, -2, 4, 3, 4), Box(0, 16, -2, 3.1, -2, 4, 0, 4)])],
+        "left": [Part("hoof", [Box(16, 57, -2, 0, -2, 4, 3, 4), Box(16, 48, -2, 3.1, -2, 4, 0, 4)])],
+    }, src=(0, 3, 0), dst=(0, 14.1, 0), scale=(1.6, 1.25, 1.6)))
 
     R.append(Rig("hoglin_hooves", "legs", "minecraft:entity/hoglin/hoglin", (128, 64), {
-        "right": [Part("hoof", [Box(66, 52, -3, 0, -3, 6, 4, 6), Box(66, 42, -3, 4, -3, 6, 0, 6)])],
-        "left": [Part("hoof", [Box(41, 52, -3, 0, -3, 6, 4, 6), Box(41, 42, -3, 4, -3, 6, 0, 6)])],
-    }, src=(0, 4, 0), dst=(0, 13.1, 0), scale=(1.1, 1.0, 1.1)))
+        "right": [Part("hoof", [Box(66, 52, -3, 0, -3, 6, 4, 6), Box(66, 42, -3, 4.1, -3, 6, 0, 6)])],
+        "left": [Part("hoof", [Box(41, 52, -3, 0, -3, 6, 4, 6), Box(41, 42, -3, 4.1, -3, 6, 0, 6)])],
+    }, src=(0, 4, 0), dst=(0, 14.1, 0), scale=(1.1, 1.0, 1.1)))
 
     off = 3.0 / 0.45
     R.append(Rig("spider_legs", "legs", "minecraft:entity/spider/spider", (64, 32), {

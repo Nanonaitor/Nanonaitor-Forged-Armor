@@ -18,6 +18,10 @@ import com.nanonaitor.forgedarmor.ForgedArmorNetwork;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.client.renderer.entity.ArmorStandRenderer;
+import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
+import com.nanonaitor.forgedarmor.AttachmentArmorTooltip;
 
 @Mod.EventBusSubscriber(modid = ForgedArmor.ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class ClientSetup {
@@ -34,6 +38,11 @@ public final class ClientSetup {
     @SubscribeEvent public static void keys(RegisterKeyMappingsEvent event) { event.register(OPEN_STORAGE); }
 
     @SubscribeEvent
+    public static void tooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
+        event.register(AttachmentArmorTooltip.class, ClientAttachmentArmorTooltip::new);
+    }
+
+    @SubscribeEvent
     public static void registerAttachmentLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         for (AttachmentRigs.Rig rig : AttachmentRigs.RIGS.values())
             event.registerLayerDefinition(rig.layer(), () -> AttachmentRigs.create(rig.type()));
@@ -48,10 +57,15 @@ public final class ClientSetup {
                 playerRenderer.addLayer(new ForgedElytraLayer(playerRenderer, event.getEntityModels()));
             }
         }
+        ArmorStandRenderer armorStandRenderer = (ArmorStandRenderer) event.getRenderer(EntityType.ARMOR_STAND);
+        if (armorStandRenderer != null) {
+            armorStandRenderer.addLayer(new ForgedArmorLayer<>(armorStandRenderer, event.getEntityModels()));
+            armorStandRenderer.addLayer(new ForgedElytraLayer<>(armorStandRenderer, event.getEntityModels()));
+        }
     }
 
     private static final class InputHandler {
-        private boolean jumpWasDown, forwardWasDown, backWasDown, leftWasDown, rightWasDown;
+        private boolean jumpWasDown, airJumpArmed, forwardWasDown, backWasDown, leftWasDown, rightWasDown;
         private long forwardTap = -20, backTap = -20, leftTap = -20, rightTap = -20;
 
         @SubscribeEvent public void tick(TickEvent.ClientTickEvent event) {
@@ -60,10 +74,14 @@ public final class ClientSetup {
             if (mc.player == null || mc.screen != null) return;
             long tick = mc.player.tickCount;
             boolean jump = mc.options.keyJump.isDown();
-            if (jump && !jumpWasDown && !mc.player.onGround()
+            if (mc.player.onGround()) airJumpArmed = false;
+            else if (!jump) airJumpArmed = true;
+            if (jump && !jumpWasDown && airJumpArmed && !mc.player.onGround()
                     && (AttachmentData.equipped(mc.player).contains(AttachmentType.ALLAY_WINGS)
-                    || AttachmentData.equipped(mc.player).contains(AttachmentType.VEX_WINGS)))
+                    || AttachmentData.equipped(mc.player).contains(AttachmentType.VEX_WINGS))) {
                 ForgedArmorNetwork.send(ForgedArmorNetwork.AbilityAction.DOUBLE_JUMP);
+                airJumpArmed = false;
+            }
             if (jump && AttachmentData.equipped(mc.player).contains(AttachmentType.PHANTOM_WINGS)
                     && tick % 2 == 0) ForgedArmorNetwork.send(ForgedArmorNetwork.AbilityAction.GLIDE);
             jumpWasDown = jump;

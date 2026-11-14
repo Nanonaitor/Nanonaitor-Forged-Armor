@@ -1,1 +1,1 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"nanonaitor_forged_armor:item/breeze_wind"}}
+{"parent":"minecraft:item/generated","textures":{"layer0":"nanonaitor_forged_armor:item/breeze_wind"},"display":{"gui":{"rotation":[0,0,0],"translation":[0,0,0],"scale":[0.78,0.78,0.78]}}}

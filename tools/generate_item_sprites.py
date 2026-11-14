@@ -7,7 +7,9 @@ T = (0, 0, 0, 0)
 
 def model_json(name):
     return {"parent": "minecraft:item/generated",
-            "textures": {"layer0": f"nanonaitor_forged_armor:item/{name}"}}
+            "textures": {"layer0": f"nanonaitor_forged_armor:item/{name}"},
+            "display": {"gui": {"rotation": [0, 0, 0], "translation": [0, 0, 0],
+                                  "scale": [0.78, 0.78, 0.78]}}}
 
 def save(items: Path, models: Path, name: str, painter, custom_model=None):
     image = Image.new("RGBA", (16, 16), T)
@@ -82,14 +84,13 @@ def generate_all(items: Path, models: Path):
     save(items, models, "bunny_ears", bunny_ears)
     save(items, models, "pillager_nose", lambda d: (d.polygon([(5,2),(11,2),(12,4),(12,12),(10,14),(6,14),(4,12),(4,5)], fill=(71,64,63,255)), d.rectangle((6,4,10,11), fill=(104,94,91,255)), d.rectangle((6,4,7,6), fill=(131,119,114,255))))
 
-    spider_model = {"parent":"minecraft:item/handheld","textures":{"particle":"nanonaitor_forged_armor:item/spider_mask","mask":"nanonaitor_forged_armor:item/spider_mask"},"elements":[{"from":[3,3,3],"to":[13,13,13],"faces":{face:{"uv":[0,0,16,16],"texture":"#mask"} for face in ("north","south","east","west","up","down")}}]}
     def spider(d):
         d.rectangle((1,1,14,14), fill=(35,25,24,255)); d.rectangle((2,2,13,13), fill=(51,36,34,255))
         d.rectangle((3,4,5,6), fill=(181,0,0,255)); d.rectangle((10,4,12,6), fill=(181,0,0,255))
         d.rectangle((4,5,6,7), fill=(247,20,20,255)); d.rectangle((9,5,11,7), fill=(247,20,20,255))
         d.rectangle((2,8,4,9), fill=(109,8,8,255)); d.rectangle((11,8,13,9), fill=(109,8,8,255))
         d.rectangle((5,10,10,12), fill=(19,15,15,255)); d.rectangle((5,12,6,15), fill=(210,201,180,255)); d.rectangle((9,12,10,15), fill=(210,201,180,255))
-    save(items, models, "spider_mask", spider, spider_model)
+    save(items, models, "spider_mask", spider)
     save(items, models, "hoglin_horn", horn(((75,58,43,255),(165,143,104,255),(221,207,168,255),(246,239,204,255)), True))
 
     def warden_ears(d):

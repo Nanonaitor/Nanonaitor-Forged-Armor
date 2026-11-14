@@ -1,3 +1,14 @@
+# 0.1.9
+
+- Moved Turtle Shell from the Chest attachment position to the Back position on chestplates.
+- Preserved legacy Turtle Shell chestplate data by recognizing and migrating its old Chest-slot entry.
+- Added a diamond armor-piece icon to every attachment tooltip.
+- Labeled every upgrade with both its compatible armor piece and its attachment position.
+- Redrew the attachment item sprites, and added the missing Spider Legs sprite.
+- Removed the red placeholder bar from the Armor Forge screen and centred the "Armor Forge" title there.
+- Mob-head attachments (Zombie, Skeleton, Creeper, Spider and Dragon) are now sized to the player's head and hide the wearer's head and helmet.
+- Moved Frog Legs forward on the boot and lowered Piglin, Strider and Hoglin hooves one pixel to stop flickering against the boot sole.
+
 # 0.1.4
 
 - Removed Donkey Tail and cleanly ignored its old missing item mapping.
@@ -41,6 +52,13 @@
 - Added combat, movement, defense, neutrality, repair, cleansing, storage, highlighting and mobility abilities.
 - Added replacement support that returns an attachment already installed in the same slot.
 - Added initial compatibility hooks for temperature effects, Pale Bloom Creakings and backported Breeze entities.
+# 0.1.8
+
+- Scaled attachment sprites down within inventory slots while preserving their true 16x16 source grid.
+- Kept every inventory icon on a flat generated-item model so equipped 3D rigs cannot obscure sprite rendering.
+- Fixed Allay and Vex Wings so pressing Jump again after leaving the ground performs one synchronized midair jump.
+- Added forged attachment and Elytra rendering to armor stands, following their configured poses.
+
 # 0.1.7
 
 - Replaced attachment inventory art with a consistent true 16x16 vanilla-style sprite set.

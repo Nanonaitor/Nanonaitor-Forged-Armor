@@ -22,7 +22,6 @@ public final class ArmorAttachmentItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.literal("Armor slot: " + type.slot().displayName().getString()).withStyle(ChatFormatting.GREEN));
         tooltip.add(Component.translatable("attachment.nanonaitor_forged_armor." + type.id() + ".description")
                 .withStyle(ChatFormatting.GRAY));
     }

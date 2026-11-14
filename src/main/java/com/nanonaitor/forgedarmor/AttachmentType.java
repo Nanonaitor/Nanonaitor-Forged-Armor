@@ -17,7 +17,7 @@ public enum AttachmentType {
 
     WITCH_HEART("Witch Heart", AttachmentSlot.CHEST, "minecraft:witch"),
     IRON_GOLEM_HEART("Iron Golem Heart", AttachmentSlot.CHEST, "minecraft:iron_golem"),
-    TURTLE_SHELL("Turtle Shell", AttachmentSlot.CHEST, "minecraft:turtle"),
+    TURTLE_SHELL("Turtle Shell", AttachmentSlot.BACK, "minecraft:turtle"),
     CREAKING_HEART("Creaking Heart", AttachmentSlot.CHEST, "minecraft:creaking", "palebloom:creaking"),
     ALLAY_WINGS("Allay Wings", AttachmentSlot.BACK, "minecraft:allay"),
     VEX_WINGS("Vex Wings", AttachmentSlot.BACK, "minecraft:vex"),
