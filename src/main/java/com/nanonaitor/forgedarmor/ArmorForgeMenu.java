@@ -13,6 +13,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 
 public final class ArmorForgeMenu extends AbstractContainerMenu {
     private final Container input = new SimpleContainer(2);
@@ -27,21 +29,21 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
         super(ForgedArmor.ARMOR_FORGE_MENU.get(), id);
         this.access = ContainerLevelAccess.create(inventory.player.level(), pos);
 
-        addSlot(new Slot(input, 0, 44, 35) {
+        addSlot(new Slot(input, 0, 27, 47) {
             @Override public boolean mayPlace(ItemStack stack) {
                 Equipable equipable = Equipable.get(stack);
                 return equipable != null && equipable.getEquipmentSlot().getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR;
             }
             @Override public void setChanged() { super.setChanged(); updateResult(); }
         });
-        addSlot(new Slot(input, 1, 80, 35) {
+        addSlot(new Slot(input, 1, 76, 47) {
             @Override public boolean mayPlace(ItemStack stack) {
                 AttachmentType type = AttachmentData.attachmentType(stack);
                 return type != null && type.enabled();
             }
             @Override public void setChanged() { super.setChanged(); updateResult(); }
         });
-        addSlot(new Slot(result, 0, 134, 35) {
+        addSlot(new Slot(result, 0, 134, 47) {
             @Override public boolean mayPlace(ItemStack stack) { return false; }
             @Override public void onTake(Player player, ItemStack stack) {
                 ItemStack armor = input.getItem(0);
@@ -56,6 +58,10 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
                 }
                 input.removeItem(0, 1);
                 input.removeItem(1, 1);
+                if (!player.level().isClientSide) {
+                    access.execute((level, pos) -> level.playSound(null, pos, SoundEvents.ANVIL_USE,
+                            SoundSource.BLOCKS, 1.0F, 1.0F));
+                }
                 updateResult();
                 super.onTake(player, stack);
             }

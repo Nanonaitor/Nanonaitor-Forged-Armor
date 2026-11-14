@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attachment Preview</title>
+<style>
+  :root { --bg: #23262d; --cell: #343842; --ink: #e9ecf2; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 13px system-ui, sans-serif; }
+  header { padding: 8px 12px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button { background: #3d4350; color: var(--ink); border: 1px solid #555c6b; border-radius: 4px; padding: 3px 8px; cursor: pointer; }
+  button.on { background: #6a8cff; border-color: #6a8cff; }
+  #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--min, 420px), 1fr)); gap: 8px; padding: 8px; }
+  .cell { background: var(--cell); border-radius: 6px; padding: 4px; }
+  .cell b { display: block; padding: 2px 4px; }
+  .views { display: grid; grid-template-columns: repeat(3, 1fr); }
+  canvas { width: 100%; display: block; }
+</style>
+</head>
+<body>
+<header id="bar"></header>
+<div id="grid"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const RIGS = /*RIGS*/null;
+const TEXTURES = /*TEXTURES*/null;
+const loader = new THREE.TextureLoader();
+const texCache = {};
+function tex(loc) {
+  if (!texCache[loc]) {
+    const t = loader.load(TEXTURES[loc], () => redraw());
+    t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter;
+    texCache[loc] = t;
+  }
+  return texCache[loc];
+}
+
+// Exact port of ModelPart.Cube vertex + UV construction (1.20.1).
+function boxGeometry(b, tw, th) {
+  let [u, v, x, y, z, w, h, d, mirror, g] = b;
+  let x0 = x - g, y0 = y - g, z0 = z - g, x1 = x + w + g, y1 = y + h + g, z1 = z + d + g;
+  if (mirror) [x0, x1] = [x1, x0];
+  const V = {
+    19: [x0, y0, z0], 20: [x1, y0, z0], 21: [x1, y1, z0], 22: [x0, y1, z0],
+    23: [x0, y0, z1], 24: [x1, y0, z1], 25: [x1, y1, z1], 26: [x0, y1, z1]};
+  const f27 = u, f28 = u + d, f29 = u + d + w, f30 = u + d + w + w, f31 = u + d + w + d, f32 = u + d + w + d + w;
+  const f33 = v, f34 = v + d, f35 = v + d + h;
+  const faces = [
+    [[24, 23, 19, 20], f28, f33, f29, f34], [[21, 22, 26, 25], f29, f34, f30, f33],
+    [[19, 23, 26, 22], f27, f34, f28, f35], [[20, 19, 22, 21], f28, f34, f29, f35],
+    [[24, 20, 21, 25], f29, f34, f31, f35], [[23, 24, 25, 26], f31, f34, f32, f35]];
+  const pos = [], uv = [];
+  for (const [ids, u1, v1, u2, v2] of faces) {
+    let verts = ids.map(i => V[i]);
+    let uvs = [[u2, v1], [u1, v1], [u1, v2], [u2, v2]];
+    if (mirror) { verts = verts.reverse(); uvs = uvs.reverse(); }
+    for (const k of [0, 1, 2, 0, 2, 3]) {
+      pos.push(...verts[k]);
+      uv.push(uvs[k][0] / tw, 1 - uvs[k][1] / th);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function material(loc, translucent, glow) {
+  return new THREE.MeshLambertMaterial({
+    map: tex(loc), side: THREE.DoubleSide, transparent: !!translucent || !!glow,
+    alphaTest: translucent ? 0.02 : 0.1, emissive: glow ? 0xffffff : 0x000000, emissiveMap: glow ? tex(loc) : null,
+    depthWrite: !translucent});
+}
+
+function buildPart(p, mat, tw, th) {
+  const g = new THREE.Group();
+  g.position.set(...p.pivot);
+  g.rotation.set(p.rot[0], p.rot[1], p.rot[2], 'ZYX');
+  for (const b of p.boxes) g.add(new THREE.Mesh(boxGeometry(b, tw, th), mat));
+  for (const c of p.children || []) g.add(buildPart(c, mat, tw, th));
+  return g;
+}
+
+// ---- player (steve + full iron armour), same layout as PlayerModel / HumanoidArmorModel
+function P(name, boxes, pivot = [0, 0, 0]) { return {name, boxes, pivot, rot: [0, 0, 0], children: []}; }
+function playerParts() {
+  const skin = {
+    head: [P('h', [[0, 0, -4, -8, -4, 8, 8, 8, false, 0], [32, 0, -4, -8, -4, 8, 8, 8, false, 0.5]])],
+    body: [P('b', [[16, 16, -4, 0, -2, 8, 12, 4, false, 0], [16, 32, -4, 0, -2, 8, 12, 4, false, 0.25]])],
+    right_arm: [P('ra', [[40, 16, -3, -2, -2, 4, 12, 4, false, 0], [40, 32, -3, -2, -2, 4, 12, 4, false, 0.25]])],
+    left_arm: [P('la', [[32, 48, -1, -2, -2, 4, 12, 4, false, 0], [48, 48, -1, -2, -2, 4, 12, 4, false, 0.25]])],
+    right_leg: [P('rl', [[0, 16, -2, 0, -2, 4, 12, 4, false, 0], [0, 32, -2, 0, -2, 4, 12, 4, false, 0.25]])],
+    left_leg: [P('ll', [[16, 48, -2, 0, -2, 4, 12, 4, false, 0], [0, 48, -2, 0, -2, 4, 12, 4, false, 0.25]])]};
+  const outer = {
+    head: [P('h', [[0, 0, -4, -8, -4, 8, 8, 8, false, 1]])],
+    body: [P('b', [[16, 16, -4, 0, -2, 8, 12, 4, false, 1]])],
+    right_arm: [P('ra', [[40, 16, -3, -2, -2, 4, 12, 4, false, 1]])],
+    left_arm: [P('la', [[40, 16, -1, -2, -2, 4, 12, 4, true, 1]])],
+    right_leg: [P('rl', [[0, 16, -2, 0, -2, 4, 12, 4, false, 1]])],
+    left_leg: [P('ll', [[0, 16, -2, 0, -2, 4, 12, 4, true, 1]])]};
+  const inner = {
+    body: [P('b', [[16, 16, -4, 0, -2, 8, 12, 4, false, 0.5]])],
+    right_leg: [P('rl', [[0, 16, -2, 0, -2, 4, 12, 4, false, 0.5]])],
+    left_leg: [P('ll', [[0, 16, -2, 0, -2, 4, 12, 4, true, 0.5]])]};
+  return {skin, outer, inner};
+}
+const PIVOTS = {head: [0, 0, 0], body: [0, 0, 0], right_arm: [-5, 2, 0], left_arm: [5, 2, 0],
+                right_leg: [-1.9, 12, 0], left_leg: [1.9, 12, 0]};
+
+function rigObject(rig, side) {
+  const mat = material(rig.texture, rig.translucent, false);
+  const g1 = new THREE.Group(); g1.position.set(...rig.dst); g1.scale.set(...rig.scale);
+  const g2 = new THREE.Group(); g2.rotation.set(rig.rot[0], rig.rot[1], rig.rot[2], 'ZYX');
+  const g3 = new THREE.Group(); g3.position.set(-rig.src[0], -rig.src[1], -rig.src[2]);
+  g1.add(g2); g2.add(g3);
+  const add = (m) => {
+    for (const s of ['both', side]) for (const p of (rig.parts[s] || [])) g3.add(buildPart(p, m, rig.size[0], rig.size[1]));
+  };
+  add(mat);
+  if (rig.glow) add(material(rig.glow, true, true));
+  return g1;
+}
+
+function buildScene(rig, showArmor) {
+  const scene = new THREE.Scene();
+  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.6); sun.position.set(0.3, 1, -0.6); scene.add(sun);
+  const sun2 = new THREE.DirectionalLight(0xffffff, 0.35); sun2.position.set(-0.4, 0.6, 0.8); scene.add(sun2);
+  const entity = new THREE.Group(); entity.scale.set(-1, -1, 1); entity.position.y = 24; scene.add(entity);
+  const {skin, outer, inner} = playerParts();
+  const skinMat = material('minecraft:entity/player/wide/steve');
+  const l1 = material('minecraft:models/armor/iron_layer_1');
+  const l2 = material('minecraft:models/armor/iron_layer_2');
+  const parts = {};
+  for (const k of Object.keys(PIVOTS)) {
+    const g = new THREE.Group(); g.position.set(...PIVOTS[k]); entity.add(g); parts[k] = g;
+    for (const p of skin[k]) g.add(buildPart(p, skinMat, 64, 64));
+    if (showArmor) {
+      for (const p of outer[k] || []) g.add(buildPart(p, l1, 64, 32));
+      for (const p of inner[k] || []) g.add(buildPart(p, l2, 64, 32));
+    }
+  }
+  if (rig.anchor === 'head') parts.head.add(rigObject(rig, 'both'));
+  else if (rig.anchor === 'body') parts.body.add(rigObject(rig, 'both'));
+  else { parts.left_leg.add(rigObject(rig, 'left')); parts.right_leg.add(rigObject(rig, 'right')); }
+  const grid = new THREE.GridHelper(48, 12, 0x555b66, 0x444a55); scene.add(grid);
+  return scene;
+}
+
+const VIEWS = {front: [-0.55, 0.25, -1], side: [1, 0.15, 0], back: [0.55, 0.3, 1]};
+const FOCUS = {head: [0, 28, 0, 22], body: [0, 17, 0, 28], legs: [0, 6, 0, 22]};
+const renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true, alpha: true});
+renderer.setPixelRatio(1);
+let current = [], armor = true, filter = 'all', zoom = true;
+const BIG = new URLSearchParams(location.search).has('big');
+const CW = BIG ? 420 : 200, CH = BIG ? 520 : 260;
+if (BIG) document.documentElement.style.setProperty('--min', '1300px');
+
+function draw() {
+  const grid = document.getElementById('grid'); grid.innerHTML = '';
+  current = RIGS.filter(r => filter === 'all' || r.anchor === filter);
+  for (const rig of current) {
+    const cell = document.createElement('div'); cell.className = 'cell';
+    cell.innerHTML = `<b>${rig.type}</b><div class="views"></div>`;
+    grid.appendChild(cell);
+    const scene = buildScene(rig, armor);
+    for (const [name, dir] of Object.entries(VIEWS)) {
+      const [fx, fy, fz, span] = zoom ? FOCUS[rig.anchor] : [0, 17, 0, 46];
+      const cam = new THREE.OrthographicCamera(-span / 2, span / 2, span * 0.65, -span * 0.65, 0.1, 500);
+      const len = Math.hypot(...dir);
+      cam.position.set(fx + dir[0] / len * 80, fy + dir[1] / len * 80, fz + dir[2] / len * 80);
+      cam.lookAt(fx, fy, fz);
+      renderer.setSize(CW, CH);
+      renderer.render(scene, cam);
+      const c = document.createElement('canvas'); c.width = CW; c.height = CH;
+      c.getContext('2d').drawImage(renderer.domElement, 0, 0);
+      cell.querySelector('.views').appendChild(c);
+    }
+  }
+}
+let pending = null;
+function redraw() { clearTimeout(pending); pending = setTimeout(draw, 60); }
+
+const bar = document.getElementById('bar');
+function btn(label, on, fn) {
+  const b = document.createElement('button'); b.textContent = label; b.className = on() ? 'on' : '';
+  b.onclick = () => { fn(); for (const x of bar.children) x.refresh && x.refresh(); redraw(); };
+  b.refresh = () => b.className = on() ? 'on' : '';
+  bar.appendChild(b);
+}
+for (const f of ['all', 'head', 'body', 'legs']) btn(f, () => filter === f, () => filter = f);
+btn('armor', () => armor, () => armor = !armor);
+btn('zoom', () => zoom, () => zoom = !zoom);
+const params = new URLSearchParams(location.search);
+if (params.get('filter')) filter = params.get('filter');
+if (params.get('only')) RIGS.splice(0, RIGS.length, ...RIGS.filter(r => params.get('only').split(',').includes(r.type)));
+for (const x of bar.children) x.refresh();
+draw();
+</script>
+</body>
+</html>

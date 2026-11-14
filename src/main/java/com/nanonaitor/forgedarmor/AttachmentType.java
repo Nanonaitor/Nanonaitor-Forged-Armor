@@ -69,7 +69,6 @@ public enum AttachmentType {
             case SKELETON_MASK -> net.minecraft.world.item.Items.SKELETON_SKULL;
             case CREEPER_MASK -> net.minecraft.world.item.Items.CREEPER_HEAD;
             case ENDER_DRAGON_MASK -> net.minecraft.world.item.Items.DRAGON_HEAD;
-            case TURTLE_SHELL -> net.minecraft.world.item.Items.TURTLE_HELMET;
             case SHULKER_SHELL -> net.minecraft.world.item.Items.SHULKER_SHELL;
             case ELYTRA -> net.minecraft.world.item.Items.ELYTRA;
             case RABBIT_FEET -> net.minecraft.world.item.Items.RABBIT_FOOT;

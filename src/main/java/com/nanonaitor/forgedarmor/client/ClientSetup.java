@@ -35,7 +35,8 @@ public final class ClientSetup {
 
     @SubscribeEvent
     public static void registerAttachmentLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(AttachmentModel.LAYER, AttachmentModel::createBodyLayer);
+        for (AttachmentRigs.Rig rig : AttachmentRigs.RIGS.values())
+            event.registerLayerDefinition(rig.layer(), () -> AttachmentRigs.create(rig.type()));
     }
 
     @SubscribeEvent

@@ -41,3 +41,22 @@
 - Added combat, movement, defense, neutrality, repair, cleansing, storage, highlighting and mobility abilities.
 - Added replacement support that returns an attachment already installed in the same slot.
 - Added initial compatibility hooks for temperature effects, Pale Bloom Creakings and backported Breeze entities.
+# 0.1.7
+
+- Replaced attachment inventory art with a consistent true 16x16 vanilla-style sprite set.
+- Added matching sprites for every custom drop from Ravager Horn through Hoglin Hooves.
+- Restyled Spider Mask as a dimensional mob-head item with the spider's dark face, red eyes, and fangs.
+- Kept Elytra and Shulker Shell on their exact vanilla item art rather than duplicating those existing items.
+
+# 0.1.6
+
+- Restyled the Armor Forge screen using Minecraft's standard anvil interface.
+- Added the normal anvil-use sound when an attachment is successfully forged onto armor.
+- Redrew Ravager Horn, Bunny Ears, Allay Wings, and Turtle Shell as detailed 32x32 Minecraft pixel-art items matching their concept silhouettes.
+
+# 0.1.5
+
+- Added polished player-scale models for Ravager Horns, Bunny Ears, Allay Wings, and the Turtle Shell.
+- Added editable Blockbench source files with consistent head and back anchors.
+- Replaced placeholder inventory art for those four attachments with dedicated 16x16 pixel art.
+- Made Turtle Shell a dedicated Forged Armor attachment item instead of reusing the Turtle Helmet icon.

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.nanonaitor.forgedarmor'
-version = '0.1.4'
+version = '0.1.7'
 base.archivesName = 'nanonaitor-forged-armor-1.20.1'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
