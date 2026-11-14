@@ -58,6 +58,24 @@ public final class AttachmentData {
         return result;
     }
 
+    /** Every attachment on this armor piece, in attachment-position order (disabled ones included). */
+    public static java.util.List<AttachmentType> attached(ItemStack armor) {
+        java.util.List<AttachmentType> result = new java.util.ArrayList<>();
+        for (AttachmentSlot slot : AttachmentSlot.values()) {
+            AttachmentType type = AttachmentType.byId(getId(armor, slot));
+            if (type != null) result.add(type);
+        }
+        return result;
+    }
+
+    /** A single copy of the armor with every attachment removed; enchantments and other data are kept. */
+    public static ItemStack strip(ItemStack armor) {
+        ItemStack result = armor.copy();
+        result.setCount(1);
+        result.removeTagKey(ROOT);
+        return result;
+    }
+
     public static AttachmentType attachmentType(ItemStack stack) {
         if (stack.getItem() instanceof ArmorAttachmentItem item) return item.type();
         for (AttachmentType type : AttachmentType.values())
@@ -72,7 +90,7 @@ public final class AttachmentData {
 
     /** Matches vanilla Elytra behavior: flight stops before the equipped item breaks. */
     public static boolean canFlyWith(ItemStack chest) {
-        return has(chest, AttachmentType.ELYTRA) && chest.isDamageableItem()
+        return has(chest, AttachmentType.ELYTRA) && AttachmentType.ELYTRA.enabled() && chest.isDamageableItem()
                 && chest.getDamageValue() < chest.getMaxDamage() - 1;
     }
 
@@ -83,7 +101,7 @@ public final class AttachmentData {
             for (AttachmentSlot attachmentSlot : AttachmentSlot.values()) {
                 if (attachmentSlot.armorSlot() != slot) continue;
                 AttachmentType type = AttachmentType.byId(getId(armor, attachmentSlot));
-                if (type != null) result.add(type);
+                if (type != null && type.enabled()) result.add(type);
             }
         }
         return result;

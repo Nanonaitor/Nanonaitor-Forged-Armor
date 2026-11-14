@@ -43,6 +43,11 @@ public final class ClientSetup {
     }
 
     @SubscribeEvent
+    public static void itemDecorations(net.minecraftforge.client.event.RegisterItemDecorationsEvent event) {
+        AttachmentDecorator.register(event);
+    }
+
+    @SubscribeEvent
     public static void registerAttachmentLayer(EntityRenderersEvent.RegisterLayerDefinitions event) {
         for (AttachmentRigs.Rig rig : AttachmentRigs.RIGS.values())
             event.registerLayerDefinition(rig.layer(), () -> AttachmentRigs.create(rig.type()));

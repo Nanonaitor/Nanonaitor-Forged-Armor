@@ -38,6 +38,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -59,14 +61,14 @@ public final class ForgedArmorEvents {
         int looting = killer == null ? 0 : EnchantmentHelper.getMobLooting(killer);
         int luck = killer == null || !killer.hasEffect(MobEffects.LUCK) ? 0
                 : killer.getEffect(MobEffects.LUCK).getAmplifier() + 1;
-        double chance = ForgedArmorConfig.BASE_DROP_CHANCE.get()
-                + looting * ForgedArmorConfig.LOOTING_BONUS_PER_LEVEL.get()
+        double bonus = looting * ForgedArmorConfig.LOOTING_BONUS_PER_LEVEL.get()
                 + luck * ForgedArmorConfig.LUCK_BONUS_PER_LEVEL.get();
         ResourceLocation entityKey = BuiltInRegistries.ENTITY_TYPE.getKey(event.getEntity().getType());
         String entityId = entityKey.toString();
         for (AttachmentType type : AttachmentType.values()) {
-            if (!type.enabled() || !type.dropsFrom(entityId)
-                    || event.getEntity().getRandom().nextDouble() >= Math.min(1.0, chance)) continue;
+            if (!type.enabled() || !type.dropsFrom(entityId)) continue;
+            double chance = ForgedArmorConfig.baseDropChance(type) + bonus;
+            if (event.getEntity().getRandom().nextDouble() >= Math.min(1.0, chance)) continue;
             ItemStack drop = AttachmentData.attachmentStack(type);
             event.getDrops().add(new ItemEntity(event.getEntity().level(), event.getEntity().getX(),
                     event.getEntity().getY(), event.getEntity().getZ(), drop));
@@ -103,13 +105,16 @@ public final class ForgedArmorEvents {
 
         if (victim instanceof Player player && player.isUsingItem() && player.getUseItem().getItem() instanceof ShieldItem
                 && victimAttachments.contains(AttachmentType.TURTLE_SHELL))
-            event.setAmount(event.getAmount() * 0.75F);
+            event.setAmount(event.getAmount() * (1.0F - ForgedArmorConfig.TURTLE_SHELL_SHIELD_REDUCTION.get().floatValue()));
 
         if (attackerEntity instanceof LivingEntity attacker && attacker != victim) {
-            if (victimAttachments.contains(AttachmentType.BEE_STINGER))
-                attacker.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 1));
+            if (victimAttachments.contains(AttachmentType.BEE_STINGER)) {
+                attacker.addEffect(new MobEffectInstance(MobEffects.POISON,
+                        ForgedArmorConfig.BEE_STINGER_POISON_SECONDS.get() * 20, 1));
+                AbilityEffects.play(victim, SoundEvents.BEE_STING, 0.8F, 1.0F);
+            }
             if (victimAttachments.contains(AttachmentType.GUARDIAN_SPIKES))
-                attacker.hurt(victim.damageSources().thorns(victim), 2.0F);
+                attacker.hurt(victim.damageSources().thorns(victim), ForgedArmorConfig.GUARDIAN_SPIKES_DAMAGE.get().floatValue());
         }
     }
 
@@ -123,6 +128,8 @@ public final class ForgedArmorEvents {
         victim.getPersistentData().putLong("ForgedArmorCreakingReady",
                 now + ForgedArmorConfig.PERIODIC_COOLDOWN_SECONDS.get() * 20L);
         event.setCanceled(true);
+        AbilityEffects.burst(victim, ParticleTypes.SMOKE, 12, 0.4);
+        AbilityEffects.play(victim, SoundEvents.WOOD_BREAK, 1.0F, 0.6F);
     }
 
     @SubscribeEvent
@@ -135,6 +142,8 @@ public final class ForgedArmorEvents {
             event.getEntity().setDeltaMovement(event.getEntity().getDeltaMovement().x,
                     Math.min(1.25, 0.25 + event.getDistance() * 0.08), event.getEntity().getDeltaMovement().z);
             event.getEntity().hasImpulse = true;
+            AbilityEffects.burst(event.getEntity(), ParticleTypes.ITEM_SLIME, 14, 0.5);
+            AbilityEffects.play(event.getEntity(), SoundEvents.SLIME_JUMP, 1.0F, 1.0F);
         }
     }
 
@@ -159,10 +168,11 @@ public final class ForgedArmorEvents {
         Player player = event.player;
         Set<AttachmentType> attachments = AttachmentData.equipped(player);
         updateModifier(player, Attributes.MOVEMENT_SPEED, SPEED_ID, "Forged armor speed",
-                attachments.contains(AttachmentType.BUNNY_EARS) || attachments.contains(AttachmentType.RABBIT_FEET) ? 0.5 : 0,
+                attachments.contains(AttachmentType.BUNNY_EARS) || attachments.contains(AttachmentType.RABBIT_FEET)
+                        ? ForgedArmorConfig.SPEED_BONUS.get() : 0,
                 AttributeModifier.Operation.MULTIPLY_TOTAL);
         updateModifier(player, Attributes.ARMOR, ARMOR_ID, "Forged armor plate",
-                attachments.contains(AttachmentType.IRON_GOLEM_PLATE) ? 6.0 : 0, AttributeModifier.Operation.ADDITION);
+                attachments.contains(AttachmentType.IRON_GOLEM_PLATE) ? ForgedArmorConfig.IRON_GOLEM_PLATE_ARMOR.get() : 0, AttributeModifier.Operation.ADDITION);
         updateModifier(player, Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_ID, "Forged armor hide",
                 attachments.contains(AttachmentType.RAVAGER_HIDE) || attachments.contains(AttachmentType.ELDER_GUARDIAN_SPIKES)
                         ? ForgedArmorConfig.KNOCKBACK_RESISTANCE.get() : 0,
@@ -195,7 +205,8 @@ public final class ForgedArmorEvents {
             Vec3 motion = player.getDeltaMovement();
             double horizontal = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
             if (horizontal > 0.01 && horizontal < 0.60)
-                player.setDeltaMovement(motion.x * 1.08, motion.y, motion.z * 1.08);
+                player.setDeltaMovement(motion.x * (1 + ForgedArmorConfig.FROG_SWIM_BOOST.get()), motion.y,
+                        motion.z * (1 + ForgedArmorConfig.FROG_SWIM_BOOST.get()));
         }
         if (attachments.contains(AttachmentType.ELDER_GUARDIAN_SPIKES)
                 && player.level().getBlockState(player.blockPosition().below()).is(BlockTags.ICE)
@@ -210,7 +221,7 @@ public final class ForgedArmorEvents {
         Set<AttachmentType> attachments = AttachmentData.equipped(event.getEntity());
         if (attachments.contains(AttachmentType.RABBIT_FEET) || attachments.contains(AttachmentType.FROG_LEGS)) {
             Vec3 motion = event.getEntity().getDeltaMovement();
-            event.getEntity().setDeltaMovement(motion.x, motion.y + 0.10, motion.z);
+            event.getEntity().setDeltaMovement(motion.x, motion.y + ForgedArmorConfig.JUMP_BOOST.get(), motion.z);
         }
     }
 
@@ -226,7 +237,10 @@ public final class ForgedArmorEvents {
     private static void removeOneDebuff(Player player) {
         List<MobEffectInstance> harmful = new ArrayList<>();
         for (MobEffectInstance effect : player.getActiveEffects()) if (!effect.getEffect().isBeneficial()) harmful.add(effect);
-        if (!harmful.isEmpty()) player.removeEffect(harmful.get(player.getRandom().nextInt(harmful.size())).getEffect());
+        if (harmful.isEmpty()) return;
+        player.removeEffect(harmful.get(player.getRandom().nextInt(harmful.size())).getEffect());
+        AbilityEffects.burst(player, ParticleTypes.WITCH, 12, 0.6);
+        AbilityEffects.play(player, SoundEvents.WITCH_DRINK, 0.8F, 1.0F);
     }
 
     private static void repairRandomItem(Player player) {
@@ -236,6 +250,7 @@ public final class ForgedArmorEvents {
         if (!damaged.isEmpty()) {
             ItemStack stack = damaged.get(player.getRandom().nextInt(damaged.size()));
             stack.setDamageValue(Math.max(0, stack.getDamageValue() - 1));
+            AbilityEffects.play(player, SoundEvents.IRON_GOLEM_REPAIR, 0.5F, 1.2F);
         }
     }
 
@@ -244,6 +259,8 @@ public final class ForgedArmorEvents {
                         mob -> mob.getTarget() == player)
                 .stream().min(Comparator.comparingDouble(player::distanceToSqr)).ifPresent(mob -> {
                     mob.setTarget(null);
+                    AbilityEffects.burst(mob, ParticleTypes.SCULK_SOUL, 8, 0.5);
+                    AbilityEffects.play(player, SoundEvents.SCULK_CLICKING, 1.0F, 1.0F);
                     mob.addEffect(new MobEffectInstance(MobEffects.GLOWING,
                             ForgedArmorConfig.PERIODIC_COOLDOWN_SECONDS.get() * 20, 0));
                 });
@@ -273,8 +290,15 @@ public final class ForgedArmorEvents {
         if (equipable == null || equipable.getEquipmentSlot().getType() != EquipmentSlot.Type.ARMOR) return;
         for (AttachmentSlot slot : AttachmentSlot.values()) {
             AttachmentType type = AttachmentType.byId(AttachmentData.getId(stack, slot));
-            if (type != null) event.getToolTip().add(net.minecraft.network.chat.Component.literal(
-                    slot.displayName().getString() + ": " + type.displayName()).withStyle(net.minecraft.ChatFormatting.GREEN));
+            if (type == null) continue;
+            event.getToolTip().add(net.minecraft.network.chat.Component.literal(
+                    slot.displayName().getString() + ": " + type.displayName()).withStyle(type.enabled()
+                    ? net.minecraft.ChatFormatting.GREEN : net.minecraft.ChatFormatting.DARK_GRAY));
+            event.getToolTip().add(net.minecraft.network.chat.Component.literal("  ").append(type.enabled()
+                    ? net.minecraft.network.chat.Component.translatable(
+                            "attachment.nanonaitor_forged_armor." + type.id() + ".description")
+                    : net.minecraft.network.chat.Component.translatable("tooltip.nanonaitor_forged_armor.disabled"))
+                    .withStyle(net.minecraft.ChatFormatting.GRAY));
         }
     }
 }

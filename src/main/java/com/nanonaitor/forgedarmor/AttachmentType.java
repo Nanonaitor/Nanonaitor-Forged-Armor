@@ -61,7 +61,10 @@ public enum AttachmentType {
     public String id() { return name().toLowerCase(); }
     public String displayName() { return displayName; }
     public AttachmentSlot slot() { return slot; }
-    public boolean enabled() { return this != CAMEL_TAIL; }
+    /** Camel Tail stays off until its Tough As Nails effect exists; any other attachment can be disabled in config. */
+    public boolean enabled() { return this != CAMEL_TAIL && ForgedArmorConfig.allows(this); }
+    /** Entity ids (e.g. {@code minecraft:ravager}) that can drop this attachment. */
+    public java.util.List<String> sources() { return java.util.List.of(sources); }
     public net.minecraft.world.item.Item vanillaItem() {
         return switch (this) {
             case GOAT_HORN -> net.minecraft.world.item.Items.GOAT_HORN;

@@ -45,6 +45,8 @@ public final class ForgedArmor {
                     .strength(5.0F, 1200.0F).sound(SoundType.ANVIL).requiresCorrectToolForDrops().noOcclusion()));
     public static final RegistryObject<Item> ARMOR_FORGE_ITEM = ITEMS.register("armor_forge", () ->
             new BlockItem(ARMOR_FORGE.get(), new Item.Properties()));
+    public static final RegistryObject<Item> GUIDE = ITEMS.register("forged_armor_guide", () ->
+            new ForgedArmorGuideItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<MenuType<ArmorForgeMenu>> ARMOR_FORGE_MENU = MENUS.register("armor_forge", () ->
             IForgeMenuType.create(ArmorForgeMenu::new));
     public static final RegistryObject<Codec<EndShipMaskLootModifier>> END_SHIP_MASK_LOOT =
@@ -56,6 +58,7 @@ public final class ForgedArmor {
                     .icon(() -> new ItemStack(ARMOR_FORGE_ITEM.get()))
                     .displayItems((parameters, output) -> {
                         output.accept(ARMOR_FORGE_ITEM.get());
+                        output.accept(GUIDE.get());
                         for (AttachmentType type : AttachmentType.values())
                             if (type.enabled()) output.accept(AttachmentData.attachmentStack(type));
                     })

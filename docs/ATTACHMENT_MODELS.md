@@ -23,6 +23,12 @@ python tools/attachment_rigs.py path/to/assets/minecraft/textures build/attachme
 The preview must be served over HTTP (for example `python -m http.server`) and supports `?filter=head|body|legs`,
 `?only=id1,id2` and `?big`.
 
+## Animation
+
+`AttachmentModel.animate` moves named parts each frame from the wearer's age, walk cycle and whether they are
+airborne: Allay/Vex/Phantom wings, Parrot/Camel tails, the Bee stinger, Breeze Wind rings and Warden tendrils.
+Rotations are offsets from the baked vanilla pose, so renaming a part in the spec also needs a change there.
+
 ## Tuning a rig
 
 `vertex_on_player = dst + scale * rotation(rot_deg) * (vertex_in_vanilla_space - src)`, in model pixels with y down

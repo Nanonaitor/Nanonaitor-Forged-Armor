@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.nanonaitor.forgedarmor'
-version = '0.1.9'
+version = '0.2.0'
 base.archivesName = 'nanonaitor-forged-armor-1.20.1'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -15,15 +15,29 @@ minecraft {
     runs {
         configureEach {
             workingDirectory project.file('run')
+            property 'forge.enabledGameTestNamespaces', 'nanonaitor_forged_armor'
             mods { nanonaitor_forged_armor { source sourceSets.main } }
         }
         client {}
         server { args '--nogui' }
+        gameTestServer {
+            property 'forge.enabledGameTestNamespaces', 'nanonaitor_forged_armor'
+        }
     }
 }
 
+repositories {
+    maven { name = 'BlameJared (JEI)'; url = 'https://maven.blamejared.com/' }
+}
+
+def jeiVersion = '15.20.0.106'
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.20.1-47.4.18'
+    // JEI is optional: the plugin compiles against its API, and the full mod is only on the dev runtime classpath.
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-common-api:${jeiVersion}")
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge-api:${jeiVersion}")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jeiVersion}")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 

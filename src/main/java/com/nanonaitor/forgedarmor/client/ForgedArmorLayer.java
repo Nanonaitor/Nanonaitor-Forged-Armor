@@ -32,36 +32,39 @@ public final class ForgedArmorLayer<T extends LivingEntity, M extends HumanoidMo
                        float limbSwing, float limbSwingAmount, float partialTick, float age,
                        float netHeadYaw, float headPitch) {
         if (entity.isInvisible() && !(entity instanceof ArmorStand)) return;
+        AttachmentModel.Motion motion = entity instanceof ArmorStand ? AttachmentModel.Motion.STILL
+                : new AttachmentModel.Motion(age, limbSwing, limbSwingAmount, !entity.onGround() && !entity.isInWater());
         for (AttachmentSlot slot : AttachmentSlot.values()) {
             ItemStack armor = entity.getItemBySlot(slot.armorSlot());
             AttachmentType type = AttachmentType.byId(AttachmentData.getId(armor, slot));
             AttachmentRigs.Rig rig = type == null ? null : AttachmentRigs.RIGS.get(type);
-            if (rig != null) renderRig(rig, pose, buffers, light);
+            if (rig != null) renderRig(rig, motion, pose, buffers, light);
         }
     }
 
-    private void renderRig(AttachmentRigs.Rig rig, PoseStack pose, MultiBufferSource buffers, int light) {
+    private void renderRig(AttachmentRigs.Rig rig, AttachmentModel.Motion motion, PoseStack pose,
+                           MultiBufferSource buffers, int light) {
         M parent = getParentModel();
         switch (rig.anchor()) {
-            case HEAD -> draw(rig, parent.head, AttachmentModel.Side.NONE, pose, buffers, light);
-            case BODY -> draw(rig, parent.body, AttachmentModel.Side.NONE, pose, buffers, light);
+            case HEAD -> draw(rig, motion, parent.head, AttachmentModel.Side.NONE, pose, buffers, light);
+            case BODY -> draw(rig, motion, parent.body, AttachmentModel.Side.NONE, pose, buffers, light);
             case LEGS -> {
-                draw(rig, parent.leftLeg, AttachmentModel.Side.LEFT, pose, buffers, light);
-                draw(rig, parent.rightLeg, AttachmentModel.Side.RIGHT, pose, buffers, light);
+                draw(rig, motion, parent.leftLeg, AttachmentModel.Side.LEFT, pose, buffers, light);
+                draw(rig, motion, parent.rightLeg, AttachmentModel.Side.RIGHT, pose, buffers, light);
             }
         }
     }
 
-    private void draw(AttachmentRigs.Rig rig, ModelPart anchor, AttachmentModel.Side side,
+    private void draw(AttachmentRigs.Rig rig, AttachmentModel.Motion motion, ModelPart anchor, AttachmentModel.Side side,
                       PoseStack pose, MultiBufferSource buffers, int light) {
         pose.pushPose();
         anchor.translateAndRotate(pose);
         RenderType type = rig.translucent()
                 ? RenderType.entityTranslucent(rig.texture())
                 : RenderType.entityCutoutNoCull(rig.texture());
-        model.render(rig, side, pose, buffers.getBuffer(type), light, OverlayTexture.NO_OVERLAY);
+        model.render(rig, side, motion, pose, buffers.getBuffer(type), light, OverlayTexture.NO_OVERLAY);
         if (rig.glow() != null) {
-            model.render(rig, side, pose, buffers.getBuffer(RenderType.eyes(rig.glow())),
+            model.render(rig, side, motion, pose, buffers.getBuffer(RenderType.eyes(rig.glow())),
                     LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         }
         pose.popPose();

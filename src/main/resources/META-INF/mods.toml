@@ -22,3 +22,10 @@ mandatory=true
 versionRange="[1.20.1,1.20.2)"
 ordering="NONE"
 side="BOTH"
+
+[[dependencies.nanonaitor_forged_armor]]
+modId="jei"
+mandatory=false
+versionRange="[15.20,)"
+ordering="NONE"
+side="CLIENT"

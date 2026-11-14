@@ -1,3 +1,17 @@
+# 0.2.0
+
+- Gave the Armor Forge its own screen texture with an attachment-position row that shows what fills each position, which one an attachment will fill or replace, and a red cross when the inputs do not fit.
+- The Armor Forge now removes attachments: place armor on its own to take it out bare and get every attachment back. Enchantments are kept.
+- Forged armor shows a small green gem per attachment in every inventory slot, and its tooltip lists each attachment with its effect.
+- Added the Forged Armor Guide (book + copper ingot), listing every attachment, where it fits, what it does and which mobs drop it at what chance.
+- Added optional JEI support with an info page for the Armor Forge and every attachment.
+- New config options: per-attachment drop chances, a disabled-attachments list, and strengths for most abilities (speed, armor, poison, thorns, shield reduction, jump, swim, double jump, dash strength and cooldown).
+- Wings flap, tails sway, Breeze Wind rings spin and Warden tendrils twitch while worn.
+- Abilities now show particles and play sounds: double jump, dash, glide, Creaking Heart dodge, Slime bounce, Bee Stinger, Witch Heart cleanse, Iron Golem Heart repair and Warden Heart distraction.
+- Added Camel Tail art and redrew Bunny Ears.
+- Added game tests for forging, swapping, removal, legacy Turtle Shell data and item assets (`gradlew runGameTestServer`).
+- Removed the outdated Blockbench files and their generator.
+
 # 0.1.9
 
 - Moved Turtle Shell from the Chest attachment position to the Back position on chestplates.

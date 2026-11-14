@@ -51,16 +51,17 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
                 AttachmentType incoming = AttachmentData.attachmentType(attachment);
                 if (incoming != null) {
                     AttachmentType previous = AttachmentType.byId(AttachmentData.getId(armor, incoming.slot()));
-                    if (previous != null) {
-                        ItemStack returned = AttachmentData.attachmentStack(previous);
-                        if (!player.getInventory().add(returned)) player.drop(returned, false);
-                    }
+                    if (previous != null) giveBack(player, previous);
+                } else {
+                    // Removal: armor on its own comes out bare and every attachment goes back to the player.
+                    for (AttachmentType removed : AttachmentData.attached(armor)) giveBack(player, removed);
                 }
                 input.removeItem(0, 1);
                 input.removeItem(1, 1);
                 if (!player.level().isClientSide) {
-                    access.execute((level, pos) -> level.playSound(null, pos, SoundEvents.ANVIL_USE,
-                            SoundSource.BLOCKS, 1.0F, 1.0F));
+                    boolean removing = incoming == null;
+                    access.execute((level, pos) -> level.playSound(null, pos,
+                            removing ? SoundEvents.GRINDSTONE_USE : SoundEvents.ANVIL_USE, SoundSource.BLOCKS, 1.0F, 1.0F));
                 }
                 updateResult();
                 super.onTake(player, stack);
@@ -72,11 +73,26 @@ public final class ArmorForgeMenu extends AbstractContainerMenu {
         for (int col = 0; col < 9; col++) addSlot(new Slot(inventory, col, 8 + col * 18, 142));
     }
 
+    private static void giveBack(Player player, AttachmentType type) {
+        ItemStack returned = AttachmentData.attachmentStack(type);
+        if (!player.getInventory().add(returned)) player.drop(returned, false);
+    }
+
+    public ItemStack armor() { return getSlot(0).getItem(); }
+    public ItemStack attachment() { return getSlot(1).getItem(); }
+
+    /** True when the forge is set to strip every attachment off the armor (armor in, nothing to attach). */
+    public boolean isRemoving() {
+        return !armor().isEmpty() && attachment().isEmpty() && !AttachmentData.attached(armor()).isEmpty();
+    }
+
     private void updateResult() {
         ItemStack armor = input.getItem(0);
         ItemStack attachment = input.getItem(1);
         AttachmentType type = AttachmentData.attachmentType(attachment);
-        if (armor.isEmpty() || type == null || !type.enabled() || !AttachmentData.armorAccepts(armor, type)) {
+        if (!armor.isEmpty() && attachment.isEmpty() && !AttachmentData.attached(armor).isEmpty()) {
+            result.setItem(0, AttachmentData.strip(armor));
+        } else if (armor.isEmpty() || type == null || !type.enabled() || !AttachmentData.armorAccepts(armor, type)) {
             result.setItem(0, ItemStack.EMPTY);
         } else {
             result.setItem(0, AttachmentData.attach(armor, type));

@@ -184,6 +184,11 @@ def make_preview(items: Path, output: Path):
     preview.save(output)
 
 if __name__ == "__main__":
+    import sys
+    if "--overwrite" not in sys.argv:
+        sys.exit("The item sprites in textures/item are now hand-made art and this would replace them with the old
+"
+                 "procedural sprites. Run with --overwrite if that is really what you want.")
     root = Path(__file__).resolve().parents[1]
     generate_all(root / "src/main/resources/assets/nanonaitor_forged_armor/textures/item",
                  root / "src/main/resources/assets/nanonaitor_forged_armor/models/item")
